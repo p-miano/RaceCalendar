@@ -5,29 +5,30 @@ namespace RaceCalendar
 {
     public class Race
     {
-        // Attributes
-        string name;
-        DateTime date;
-        string track;
-        List<Driver> drivers;
-        Queue<Driver> driversWaitList;
+        // Properties and fields
+        public string Name { get; set; }        
+        public DateTime Date { get; set; }
+        public string Track { get; set; }
+        public List<Driver> Drivers { get; set; }
+        public Queue<Driver> DriversWaitList { get; set; }
+        private const int maxDrivers = 3;
 
         // Constructor
         public Race(string name, DateTime date, string track)
         {
-            this.name = name;
-            this.date = date;
-            this.track = track;
-            this.drivers = new List<Driver>();
-            this.driversWaitList = new Queue<Driver>();
+            Name = name;
+            Date = date;
+            Track = track;
+            Drivers = new List<Driver>();
+            DriversWaitList = new Queue<Driver>();
         }
 
         // Methods
         public void addDriverToRace(Driver driver)
         {
-            if (drivers.Count < 5)
+            if (Drivers.Count < maxDrivers)
             {
-                drivers.Add(driver);
+                Drivers.Add(driver);
                 Console.WriteLine($"Driver {driver.Name} was successfuly added to the race.");
             }
             else
@@ -39,38 +40,60 @@ namespace RaceCalendar
 
         public void addDriverToQueue(Driver driver)
         {
-            driversWaitList.Enqueue(driver);
+            DriversWaitList.Enqueue(driver);
         }
 
         public void addDriverFromTheQueue()
         {
-            if (drivers.Count < 5)
+            if (DriversWaitList.Count > 0 && Drivers.Count < maxDrivers)
             {
-                addDriverToRace(driversWaitList.Dequeue());
+                Driver driver = DriversWaitList.Dequeue();
+                Drivers.Add(driver);
+                Console.WriteLine($"Driver {driver.Name} from the waiting list has been added to the race.");
             }
         }
 
         public void removeDriverFromRace(Driver driver)
         {
-            drivers.Remove(driver);
-            addDriverFromTheQueue();
+            if (Drivers.Remove(driver))
+            {
+                Console.WriteLine($"Driver {driver.Name} has been removed from the race.");
+                addDriverFromTheQueue();
+            }
+            else
+            {
+                Console.WriteLine("Driver not found in the race.");
+            }
         }
 
         public void printAll()
         {
             Console.WriteLine("");
-            Console.WriteLine($"Name: {name}, Date: {date.ToString("yyyy-MM-dd")}, Track: {track}");
-            if (drivers.Count == 0)
+            Console.WriteLine($"Name: {Name}, Date: {Date.ToString("yyyy-MM-dd")}, Track: {Track}");
+            if (Drivers.Count == 0)
             {
-                Console.WriteLine("No drivers were added to the race");
+                Console.WriteLine("No drivers were added to the race.");
             }
             else
             {
-                Console.WriteLine("Drivers: ");
-                foreach (Driver driver in drivers)
+                Console.WriteLine("Drivers in the race:");
+                foreach (Driver driver in Drivers)
                 {
                     Console.WriteLine($"Name: {driver.Name}, Age: {driver.Age}");
                 }
+            }
+
+            if (DriversWaitList.Count > 0)
+            {
+                Console.WriteLine("Drivers on the waiting list:");
+                foreach (Driver driver in DriversWaitList)
+                {
+                    Console.WriteLine($"Name: {driver.Name}, Age: {driver.Age}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("No drivers are on the waiting list.");
             }
         }
     }
